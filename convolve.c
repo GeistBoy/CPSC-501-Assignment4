@@ -6,6 +6,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <time.h>
 
 #define SIZE 8
 #define PI 3.141592653589793
@@ -122,31 +123,32 @@ void writeFile(char *name, double *outputSignal, int size){
     double min = outputSignal[0];
     double max = outputSignal[0];
 
-    // find max
+    // !!!!!!! Code tunning - Jamming - done
+    // !!!!!!! Code tunning - minimize work inside loop
+    // //!!!!!!! Code tunning - eliminate common subexpression
+    clock_t begin = clock();
+    // find max and min
     for(int i=0; i<size; i++){
         if(outputSignal[i] < min)
             min = outputSignal[i];
-    }
-
-    // find min
-    for(int i=0; i<size; i++){
         if(outputSignal[i] > max)
             max = outputSignal[i];
     }
-
-    for(int i=0; i<size; i++)
-        outputSignal[i] = (1 - (-1)) * (outputSignal[i] - min) / (max - min) + (-1); // !!!!!!! Code tunning - Jamming
-                                                                                     // !!!!!!! Code tunning - minimize work inside loop
-                                                                                     // //!!!!!!! Code tunning - eliminate common subexpression
-
+    
     short *output = (short*)malloc(size * sizeof(short));
-    for(int i=0; i< size; i++)
+    for(int i=0; i<size; i++){
+        outputSignal[i] = (1 - (-1)) * (outputSignal[i] - min) / (max - min) + (-1);
         output[i] = (short)(outputSignal[i] * 32767);
+    }
 
     for (int i = 0; i <= size; i++){
         fwriteShortLSB(output[i], outputStrem);
     }
 
+    clock_t end = clock();
+    double time = (double) (end - begin) / CLOCKS_PER_SEC;
+    printf("Time spent: %f\n", time);
+    
     // clean up
     free(output);
     fclose(outputStrem);
@@ -157,6 +159,7 @@ void writeFile(char *name, double *outputSignal, int size){
 
 int main(int argc, char *argv[])
 {
+    clock_t begin = clock();
     //Check the command line args
     if(argc < 4){
         printf("Usage: convolve inputfile IRfile outputfile\n");
@@ -242,6 +245,9 @@ int main(int argc, char *argv[])
     free(H);
     free(Y);
     printf("Done.\n");
+    clock_t end = clock();
+    double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
+    printf("Total time: %fs\n", time_spent);
     return 0;
 }
 
