@@ -49,6 +49,7 @@ struct header_file
 };
 
 int count;
+const double LOG2 = 0.69314718;
 
 // =====================================================================
 // Functions
@@ -125,7 +126,7 @@ void writeFile(char *name, double *outputSignal, int size){
 
     // !!!!!!! Code tunning - Jamming - done
     // !!!!!!! Code tunning - minimize work inside loop - done
-    // //!!!!!!! Code tunning - eliminate common subexpression
+    // //!!!!!!! Code tunning - eliminate common subexpression - done
     // find max and min
     for(int i=0; i<size; i++){
         if(outputSignal[i] < min)
@@ -133,8 +134,6 @@ void writeFile(char *name, double *outputSignal, int size){
         if(outputSignal[i] > max)
             max = outputSignal[i];
     }
-
-    clock_t begin = clock();
     short *output = (short*)malloc(size * sizeof(short));
     double denom = max - min;
     for(int i=0; i<size; i++){
@@ -145,10 +144,6 @@ void writeFile(char *name, double *outputSignal, int size){
     for (int i = 0; i <= size; i++){
         fwriteShortLSB(output[i], outputStrem);
     }
-
-    clock_t end = clock();
-    double time = (double) (end - begin) / CLOCKS_PER_SEC;
-    printf("Time spent: %f\n", time);
     
     // clean up
     free(output);
@@ -195,8 +190,13 @@ int main(int argc, char *argv[])
 
     // Get the nn
     int outputSize = inputSize + irSize - 1;
-    double nn = pow(2, ceil(log2(outputSize))); //!!!!!!! Code tunning - initialize at compile time (change of base rule)
+
+    clock_t start = clock();
+    double nn = pow(2, ceil(log(outputSize) / LOG2)); //!!!!!!! Code tunning - initialize at compile time (change of base rule) - done
                                                 //!!!!!!! Code tunning - Use proper data type
+    clock_t finish = clock();
+    double time = (double)(finish - start) / CLOCKS_PER_SEC;
+    printf("Cost: %fs\n", time);
 
     // build arrays of size of nn * 2
     double *X = (double *)malloc(2 * nn * sizeof(double)); //!!!!!!! Code tunning - use caching
