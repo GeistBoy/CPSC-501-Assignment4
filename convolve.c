@@ -136,8 +136,9 @@ void writeFile(char *name, double *outputSignal, int size){
 
     clock_t begin = clock();
     short *output = (short*)malloc(size * sizeof(short));
+    double denom = max - min;
     for(int i=0; i<size; i++){
-        outputSignal[i] = 2 * (outputSignal[i] - min) / (max - min) + (-1);
+        outputSignal[i] = 2 * (outputSignal[i] - min) / denom + (-1);
         output[i] = (short)(outputSignal[i] * 32767);
     }
 
