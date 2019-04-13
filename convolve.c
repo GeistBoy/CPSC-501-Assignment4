@@ -155,7 +155,6 @@ void writeFile(char *name, double *outputSignal, int size){
 
 int main(int argc, char *argv[])
 {
-    clock_t begin = clock();
     //Check the command line args
     if(argc < 4){
         printf("Usage: convolve inputfile IRfile outputfile\n");
@@ -191,16 +190,15 @@ int main(int argc, char *argv[])
     // Get the nn
     int outputSize = inputSize + irSize - 1;
 
-    clock_t start = clock();
     int nn = pow(2, ceil(log(outputSize) / LOG2)); //!!!!!!! Code tunning - initialize at compile time (change of base rule) - done
                                                 //!!!!!!! Code tunning - Use proper data type - done
     
-
+    int arraySize = 2*nn;
     // build arrays of size of nn * 2
-    double *X = (double *)malloc(2 * nn * sizeof(double)); //!!!!!!! Code tunning - use caching
-    double *H = (double *)malloc(2 * nn * sizeof(double));
-    memset(X, 0.0, 2*nn);
-    memset(H, 0.0, 2*nn);
+    double *X = (double *)malloc(arraySize * sizeof(double)); //!!!!!!! Code tunning - use caching - done
+    double *H = (double *)malloc(arraySize * sizeof(double));
+    memset(X, 0.0, arraySize);
+    memset(H, 0.0, arraySize);
 
     // set values for arrays
     for (int i = 0, j = 0; j < inputSize; i += 2, j++)
@@ -214,18 +212,14 @@ int main(int argc, char *argv[])
     four1(H-1, nn, 1);
 
     // Claculate the Y
-    double *Y = (double *)malloc(2 * nn * sizeof(double));
+    double *Y = (double *)malloc(arraySize * sizeof(double));
 
-    for(int i=0; i<2*nn; i+=2){
+    for(int i=0; i<arraySize; i+=2){
         Y[i] = (X[i]*H[i] - X[i+1]*H[i+1]);
         Y[i+1] = X[i+1]*H[i] + X[i]*H[i+1];
     }
 
     four1(Y-1, nn, -1);
-
-    clock_t finish = clock();
-    double time = (double)(finish - start) / CLOCKS_PER_SEC;
-    printf("Cost: %fs\n", time);
 
     for(int i=0, j=0; i<outputSize; i++, j+=2){
         outputSignal[i] = Y[j];
@@ -248,9 +242,6 @@ int main(int argc, char *argv[])
     free(H);
     free(Y);
     printf("Done.\n");
-    clock_t end = clock();
-    double time_spent = (double)(end - begin) / CLOCKS_PER_SEC;
-    printf("Total time: %fs\n", time_spent);
     return 0;
 }
 
