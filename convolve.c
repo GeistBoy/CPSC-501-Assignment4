@@ -192,11 +192,9 @@ int main(int argc, char *argv[])
     int outputSize = inputSize + irSize - 1;
 
     clock_t start = clock();
-    double nn = pow(2, ceil(log(outputSize) / LOG2)); //!!!!!!! Code tunning - initialize at compile time (change of base rule) - done
-                                                //!!!!!!! Code tunning - Use proper data type
-    clock_t finish = clock();
-    double time = (double)(finish - start) / CLOCKS_PER_SEC;
-    printf("Cost: %fs\n", time);
+    int nn = pow(2, ceil(log(outputSize) / LOG2)); //!!!!!!! Code tunning - initialize at compile time (change of base rule) - done
+                                                //!!!!!!! Code tunning - Use proper data type - done
+    
 
     // build arrays of size of nn * 2
     double *X = (double *)malloc(2 * nn * sizeof(double)); //!!!!!!! Code tunning - use caching
@@ -224,6 +222,10 @@ int main(int argc, char *argv[])
     }
 
     four1(Y-1, nn, -1);
+
+    clock_t finish = clock();
+    double time = (double)(finish - start) / CLOCKS_PER_SEC;
+    printf("Cost: %fs\n", time);
 
     for(int i=0, j=0; i<outputSize; i++, j+=2){
         outputSignal[i] = Y[j];
