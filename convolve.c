@@ -124,9 +124,8 @@ void writeFile(char *name, double *outputSignal, int size){
     double max = outputSignal[0];
 
     // !!!!!!! Code tunning - Jamming - done
-    // !!!!!!! Code tunning - minimize work inside loop
+    // !!!!!!! Code tunning - minimize work inside loop - done
     // //!!!!!!! Code tunning - eliminate common subexpression
-    clock_t begin = clock();
     // find max and min
     for(int i=0; i<size; i++){
         if(outputSignal[i] < min)
@@ -134,10 +133,11 @@ void writeFile(char *name, double *outputSignal, int size){
         if(outputSignal[i] > max)
             max = outputSignal[i];
     }
-    
+
+    clock_t begin = clock();
     short *output = (short*)malloc(size * sizeof(short));
     for(int i=0; i<size; i++){
-        outputSignal[i] = (1 - (-1)) * (outputSignal[i] - min) / (max - min) + (-1);
+        outputSignal[i] = 2 * (outputSignal[i] - min) / (max - min) + (-1);
         output[i] = (short)(outputSignal[i] * 32767);
     }
 
