@@ -128,7 +128,7 @@ double *readWavFile(char *name, int channel)
     //	Get file length
     fseek(file, 0, SEEK_END);
     fileLen = ftell(file);
-    count = fileLen / 2;
+    count = fileLen / 4;
 
     fseek(file, 0, SEEK_SET);
 
@@ -241,10 +241,6 @@ int main(int argc, char *argv[])
     double *irSignalR = readWavFile(argv[2], 1);
     int irSize = count;
 
-
-    // char *outputFilename = argv[3]; // arg[3]
-    // writeFile(outputFilename, irSignalR, irSize);
-
     printf("End file reading.\n");
     printf("======================\n");
 
@@ -324,7 +320,7 @@ int main(int argc, char *argv[])
     free(HR);
     free(YL);
     free(YR);
-    printf("Done.\n");
+    printf("Done!!!!!!!\n");
     return 0;
 }
 
