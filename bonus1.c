@@ -144,9 +144,9 @@ double *readWavFile(char *name, int channel)
     //	Read file contents into buffer
     fread(buffer, fileLen, 1, file);
     double *input_signal = malloc(count * sizeof(double) + 1);
-    for (int i = channel; i <= count; i+=2)
+    for (int i = 0, j = channel; i <= count; i++, j+=2)
     {
-        int value = ((short int *)buffer)[i];
+        int value = ((short int *)buffer)[j];
         input_signal[i] = (double)value / 32768;
     }
 
